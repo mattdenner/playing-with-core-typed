@@ -42,5 +42,26 @@
   (ann-form #(+ a %)
             [AnyInteger -> AnyInteger]))
 
+; Heterogeneous maps are probably most useful for dispatching, where on field in the map defines what can happen.
+; So let's have a multimethod that will dispatch based on a particular field.
+(ann takesParticularMapStructure [(HMap :mandatory {:a (U (Value "left") (Value "right"))}) -> Integer])
+(defmulti takesParticularMapStructure (fn [values] (:a values)))
+(defmethod takesParticularMapStructure "left"  [values] 1)
+(defmethod takesParticularMapStructure "right" [values] 2)
+
+; So the first two functions will be fine because they obey the type signature, but the other two are in trouble
+; because they don't!  Notice too that these functions take no arguments and *are not* declared as [Nothing -> Integer]
+(ann takeLeftPath [-> Integer])
+(defn takeLeftPath  [] (takesParticularMapStructure {:a "left"}))
+
+(ann takeRightPath [-> Integer])
+(defn takeRightPath [] (takesParticularMapStructure {:a "right"}))
+
+(ann dontTakeEitherPathBecauseOfWrongType [-> Integer])
+(defn dontTakeEitherPathBecauseOfWrongType [] (takesParticularMapStructure {:a 1}))
+
+(ann dontTakeEitherPathBecauseOfMissingValue [-> Integer])
+(defn dontTakeEitherPathBecauseOfMissingValue [] (takesParticularMapStructure {:b "left"}))
+
 (comment
   (check-ns))
