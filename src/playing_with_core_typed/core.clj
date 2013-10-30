@@ -63,5 +63,10 @@
 (ann dontTakeEitherPathBecauseOfMissingValue [-> Integer])
 (defn dontTakeEitherPathBecauseOfMissingValue [] (takesParticularMapStructure {:b "left"}))
 
+; I have to admit: I was very impressed that core.typed caught this one!  I was expecting it to fail because the
+; map is built at runtime, rather than at "compile" time.  So I now need to go back and check the documentation!
+(ann buildItAtRuntimeAndTheyWillCome [-> Integer])
+(defn buildItAtRuntimeAndTheyWillCome [] (takesParticularMapStructure (assoc {} :b 99)))
+
 (comment
   (check-ns))
