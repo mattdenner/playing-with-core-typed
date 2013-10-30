@@ -25,5 +25,22 @@
 (defn fineForAddTwoNumbers [a b]
   (addTwoNumbers a b))
 
+; Here's a higher order function which is essentially a curried version of addTwoNumbers.  In Haskell, where all
+; functions are curried by default, you'd drop the 'Fn' bit:
+;         higherOrderFunctionForAddTwoNumbers :: Integer -> Integer -> Integer
+(ann higherOrderFunctionForAddTwoNumbers [AnyInteger -> (Fn [AnyInteger -> AnyInteger])])
+(defn higherOrderFunctionForAddTwoNumbers [a]
+  (fn [b]
+    (+ a b)))
+
+; But you can imply the types too: this will error because I'm being more restrictive in the higher order function
+; signature, than the inner function uses.  You'll see two errors: one is because the type checker could assume
+; that the inner function is declared wrong, the other because it could assume that the higher order function is
+; wrong.
+(ann moreRestrictiveThanInnerFunction [AnyInteger -> (Fn [AnyInteger -> Integer])])
+(defn moreRestrictiveThanInnerFunction [a]
+  (ann-form #(+ a %)
+            [AnyInteger -> AnyInteger]))
+
 (comment
   (check-ns))
